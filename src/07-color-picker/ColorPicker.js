@@ -20,12 +20,14 @@ const colors = [{
 
 export default function ColorPicker () {
   const [backgroundColor, setBackgroundColor] = useState('white')
-
+const handleChangeColor = (hex) => {
+  setBackgroundColor(hex);
+}
   return (
-    <div className='page' style={{ backgroundColor }}>
+    <div className='page' style={{ backgroundColor}}>
       {
         colors.map(color => (
-          <Color key={color.hex} hex={color.hex} name={color.name} />
+          <Color key={color.hex} hex={color.hex} name={color.name} changeColor={handleChangeColor}/>
         ))
       }
     </div>
