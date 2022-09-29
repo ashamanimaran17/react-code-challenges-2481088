@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const items = [{
   name: 'apple',
@@ -12,8 +12,42 @@ const items = [{
 }]
 
 function ShoppingCart () {
-  const cart = [{ name: 'apple', quantity: 3, price: 0.39 }]
-
+  //const cart = [{ name: 'apple', quantity: 1, price: 0.39 }]
+  const [cart, setCart] = useState([]);
+  const [total, setTotal] = useState(0);
+const addToCart = (item) => {
+  const tempCart = [...cart];
+  const itemFound = tempCart.find((itemInCart) => {
+return itemInCart.name === item.name;
+  })
+  if(itemFound){
+    itemFound.quantity++;
+    setCart(tempCart);
+  } else{
+    setCart([...tempCart,{...item, quantity:1}]);
+  }
+}
+const removeFromCart = (item) => {
+  const tempCart = [...cart];
+  const itemFound = tempCart.find((itemInCart) => {
+return itemInCart.name === item.name;
+  })
+  if(itemFound.quantity>1){
+    itemFound.quantity--;
+    setCart(tempCart);
+  }else{
+    const filtered = tempCart.filter((cartItem)=> {
+      return cartItem.name !== item.name;
+    });
+    setCart(filtered);
+  }
+}
+useEffect(() => {
+const newTotal = cart.reduce((acc, current) => {
+  return acc + (current.quantity*current.price);
+}, 0);
+setTotal(newTotal);
+},[cart])
   return (
     <div>
       <h1>Shopping Cart</h1>
@@ -24,7 +58,7 @@ function ShoppingCart () {
             <div key={item.name}>
               <h3>{item.name}</h3>
               <p>${item.price}</p>
-              <button>Add to Cart</button>
+              <button onClick={() => addToCart(item)}>Add to Cart</button>
             </div>)
           )}
         </div>
@@ -34,9 +68,9 @@ function ShoppingCart () {
             <div key={item.name}>
               <h3>{item.name}</h3>
               <p>
-                <button>-</button>
+                <button onClick={() => removeFromCart(item)}>-</button>
                 {item.quantity}
-                <button>+</button>
+                <button onClick={() => addToCart(item)}>+</button>
               </p>
               <p>Subtotal: ${item.quantity * item.price}</p>
             </div>
@@ -44,7 +78,7 @@ function ShoppingCart () {
         </div>
       </div>
       <div className='total'>
-        <h2>Total: $0.00</h2>
+        <h2>Total: ${total.toFixed(2)}</h2>
       </div>
     </div>
   )
